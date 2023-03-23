@@ -1,0 +1,2 @@
+the duplicatef fd: 1
+       1       1       9 pingResults.txt

@@ -110,6 +110,7 @@
 
 #define CHILD_NUM 10
 
+
 int	main(int argc, char *argv[])
 {
 	int pids[CHILD_NUM];
@@ -157,7 +158,6 @@ int	main(int argc, char *argv[])
 		i++;
 	}
 	//main process
-
 	j = 0;
 	while (j < CHILD_NUM + 1) // each process needs to close tha pipes it is not using
 	{
