@@ -5,104 +5,75 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/22 19:11:39 by tmarts            #+#    #+#             */
-/*   Updated: 2023/03/22 20:57:38 by tmarts           ###   ########.fr       */
+/*   Created: 2023/04/10 18:45:59 by tmarts            #+#    #+#             */
+/*   Updated: 2023/04/10 18:46:26 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define PROCESS_NUM 10
+#include "pipex.h"
 
-
-int	pipe_error(int **pipes, int index)
+void	redirect(int in_fd, int out_fd)
 {
-	int i;
-
-	i = 0;
-	while (i < index)
-	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
-	}
-	return(1);
+	dup2(in_fd, STDIN_FILENO);
+	close(in_fd);
+	dup2(out_fd, STDOUT_FILENO);
+	close(out_fd);
 }
 
-
-
-int	main(int argc, char *argv[])
+int	first_cp(t_pipex *s_pipex)
 {
-	int pids[CHILD_NUM];
-	int pipes[CHILD_NUM + 1][2];
-	int i;
-	int j;
-	int x;
-	// int y;
+	close(s_pipex->outfile);
+	close(s_pipex->pp[0]);
+	redirect(s_pipex->infile, s_pipex->pp[1]);
+	execve("/bin/cat", NULL, NULL);
+	return (0);
+}
+
+int	last_cp(t_pipex *s_pipex)
+{
+	close(s_pipex->infile);
+	close(s_pipex->pp[1]);
+	redirect(s_pipex->pp[0], s_pipex->outfile);
+	execve("/bin/cat", NULL, NULL);
+	return (0);
+}
+
+void	close_all(t_pipex *s_pipex)
+{
+	close(s_pipex->infile);
+	close(s_pipex->outfile);
+	close(s_pipex->pp[0]);
+	close(s_pipex->pp[1]);
+}
+
+int	pipex(t_pipex *s_pipex)
+{
+	int	i;
 
 	i = 0;
-	while (i < CHILD_NUM + 1)
+	while (i++ < 1)
 	{
-		if (pipe(pipes[i]) == -1)
-			return(pipe_error(pipes, i));
-			// return (1); //actually if the creation of pipe fails, we should falso close the prev opened pipes
-		i++;
+		if (pipe(s_pipex->pp) == -1)
+			perror("Pipe error");
 	}
 	i = 0;
-	while (i < CHILD_NUM)
+	while (i < 2)
 	{
-		pids[i] = fork();
-		if (pids[i] == -1)
-			return (2);
-		if (pids[i] == 0) //we are in child
+		s_pipex->pids[i] = fork();
+		if (s_pipex->pids[i] == -1)
+			perror("Fork error");
+		if (s_pipex->pids[i] == 0)
 		{
-			j = 0;
-			while (j < CHILD_NUM + 1) // each process needs to close tha pipes it is not using
-			{
-				if (i != j)
-					close(pipes[j][0]); //read end
-				if (i + 1 != j)
-					close(pipes[j][1]);
-				j++;
-			}
-			if (read(pipes[i][0], &x, sizeof(int)) == -1)
-				return(3);
-			printf("(%d) Got: %d\n", i, x);
-			x++; 
-			if (write(pipes[i + 1][1], &x, sizeof(int)) == -1)
-				return(4);
-			printf("(%d) Sent: %d\n", i, x);
-			close(pipes[i][0]);
-			close(pipes[i + 1][0]);
-			return (0); //the child won't continue the while loop, also "break" can be used
-		} 
+			if (i == 0)
+				return (first_cp(s_pipex));
+			if (i == 1)
+				return (last_cp(s_pipex));
+		}
 		i++;
 	}
-	//main process
-
-	j = 0;
-	while (j < CHILD_NUM + 1) // each process needs to close tha pipes it is not using
-	{
-		if (j != CHILD_NUM)
-			close(pipes[j][0]);
-		if (j != 0)
-			close(pipes[j][1]);
-		j++;
-	}
-	
-	
-	
-	// y = 5;
-	if (read(the pipe, &into what, sizeof(whatever I got from fd)))
-		return (5);
-	printf("Main process got %d\n", y);
-	
-	// if (write(pipes[0][1], &y, sizeof(int)) == -1)
-	// 			return(5);
-	// if (read(pipes[PROCESS_NUM][0], &y, sizeof(int)) == -1) // process num as index, not nr of pipes
-	// 		return(6);
-	close(pipes[0][1]);
-	close(pipes[CHILD_NUM][0]);
-	printf("Result is %d\n", y);
+	close_all(s_pipex);
 	i = 0;
-	while (i++ < CHILD_NUM)
-		wait(NULL); 
+	while (i++ < 2)
+		wait(NULL);
 	return (0);
 }
