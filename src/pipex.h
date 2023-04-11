@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:49:45 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/10 19:37:51 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/12 00:07:40 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,12 @@ typedef struct s_pipex
 	int		pp[2];
 	int		pids[2];
 	char	**paths;
-	char	*cmd_path;
-	t_cmd	**exec;
+	t_cmd	exec[2];
 }	t_pipex;
 
 int		pipex(t_pipex *s_pipex);
 char	**all_paths(char **envp);
+char	**pipex_parser(t_cmd *s_cmd, char *input);
 char	*get_right_path(char *command, char **paths);
 char	*ft_free_split(char **p_p);
 // • open, close, read, write,

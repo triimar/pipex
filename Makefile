@@ -6,7 +6,7 @@
 #    By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/06 17:07:45 by tmarts            #+#    #+#              #
-#    Updated: 2023/04/10 19:12:49 by tmarts           ###   ########.fr        #
+#    Updated: 2023/04/11 22:58:50 by tmarts           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ SRCS	= $(addprefix $(SRC_DIR)/, \
 main.c \
 path.c \
 pipex_utils.c \
+parser.c \
 pipex.c)
 
 OBJS	= ${SRCS:.c=.o}

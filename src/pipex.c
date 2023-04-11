@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:45:59 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/10 18:46:26 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/12 00:02:57 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,27 @@ void	redirect(int in_fd, int out_fd)
 	close(out_fd);
 }
 
-int	first_cp(t_pipex *s_pipex)
+int	first_cp(t_pipex *s_pipex, int fork_nr)
 {
+	char	*path;
+
 	close(s_pipex->outfile);
 	close(s_pipex->pp[0]);
 	redirect(s_pipex->infile, s_pipex->pp[1]);
-	execve("/bin/cat", NULL, NULL);
+	path = get_right_path(s_pipex->exec[fork_nr].cmd, s_pipex->paths);
+	execve(path, s_pipex->exec[fork_nr].arguments, NULL);
 	return (0);
 }
 
-int	last_cp(t_pipex *s_pipex)
+int	last_cp(t_pipex *s_pipex, int fork_nr)
 {
+	char	*path;
+	
 	close(s_pipex->infile);
 	close(s_pipex->pp[1]);
 	redirect(s_pipex->pp[0], s_pipex->outfile);
-	execve("/bin/cat", NULL, NULL);
+	path = get_right_path(s_pipex->exec[fork_nr].cmd, s_pipex->paths);
+	execve(path, s_pipex->exec[fork_nr].arguments, NULL);
 	return (0);
 }
 
@@ -65,9 +71,9 @@ int	pipex(t_pipex *s_pipex)
 		if (s_pipex->pids[i] == 0)
 		{
 			if (i == 0)
-				return (first_cp(s_pipex));
+				return (first_cp(s_pipex, i));
 			if (i == 1)
-				return (last_cp(s_pipex));
+				return (last_cp(s_pipex, i));
 		}
 		i++;
 	}

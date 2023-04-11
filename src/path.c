@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 15:49:03 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/10 19:41:18 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/12 00:15:54 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ char	**all_paths(char **envp)
 	while (envp[i] != 0 && ft_strncmp(envp[i], "PATH=", 5) != 0)
 		i++;
 	paths = ft_split((envp[i] + 5), ':');
+	if (!paths)
+		return (NULL); //
 	return (paths);
 }
 
@@ -33,7 +35,8 @@ char	*get_right_path(char *command, char **paths)
 	while (paths[i] != NULL)
 	{
 		test_path = ft_strjoin(paths[i], command);
-		printf("%s\n", test_path);
+		if (!test_path)
+			return (NULL);//
 		if (access(test_path, F_OK) == 0)
 			return (test_path);
 		free(test_path);
