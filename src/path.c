@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 15:49:03 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/12 00:15:54 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/12 22:58:26 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,20 @@ char	*get_right_path(char *command, char **paths)
 	char	*test_path;
 
 	i = 0;
-	while (paths[i] != NULL)
+	if (*command != '/')
 	{
-		test_path = ft_strjoin(paths[i], command);
-		if (!test_path)
-			return (NULL);//
-		if (access(test_path, F_OK) == 0)
-			return (test_path);
-		free(test_path);
-		i++;
+		while (paths[i] != NULL)
+		{
+			test_path = ft_pathjoin(paths[i], command);
+			if (!test_path)
+				return (NULL);//
+			if (access(test_path, F_OK) == 0)
+				return (test_path);
+			free(test_path);
+			i++;
+		}
 	}
-	return (NULL);
+	return (command);
 }
 
 // int	main(int argc, char **argv, char **envp)
