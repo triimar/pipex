@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:40:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/12 21:51:16 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/13 21:13:58 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ void	pipex_free(t_pipex *s_pipex)
 {
 	ft_free_split(s_pipex->envp_paths);
 	ft_free_split(s_pipex->exec[0].arguments);
-	free(s_pipex->exec[0].cmd);
-	free(s_pipex->exec[1].cmd);
 	ft_free_split(s_pipex->exec[1].arguments);
 	return ;
 }
