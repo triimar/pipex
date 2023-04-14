@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:40:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/13 21:13:58 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/13 23:44:32 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,15 @@ char	*ft_pathjoin(char const *s1, char const *s2)
 	int		s1_len;
 	int		s2_len;
 
-	s1_len = ft_strlen(s1);
+	if (!s1)
+		s1_len = 0;
+	else
+		s1_len = ft_strlen(s1);
 	s2_len = ft_strlen(s2);
 	string = malloc(s1_len + s2_len + 2);
 	if (!string)
 		return (NULL);
-	while (*s1 != 0)
+	while (s1 && *s1 != 0)
 		*string++ = *s1++;
 	*string = '/';
 	string++;

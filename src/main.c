@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 20:39:27 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/13 21:13:18 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/13 22:50:42 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,13 @@ int	main(int argc, char *argv[], char *envp[])
 		exit (EXIT_FAILURE);
 	}
 	s_pipex.envp_paths = all_paths(envp);
-	pipex_parser(&s_pipex.exec[0], argv[2]);
-	pipex_parser(&s_pipex.exec[1], argv[3]);
-	// if (pipex(&s_pipex, envp) != 0)
-	// 	return(1);
+	// pipex_parser(&s_pipex.exec[0], argv[2], s_pipex.envp_paths);
+	// pipex_parser(&s_pipex.exec[1], argv[3], s_pipex.envp_paths);
+	cmd_parser(&s_pipex.exec[0], argv[2], s_pipex.envp_paths);
+	cmd_parser(&s_pipex.exec[1], argv[3], s_pipex.envp_paths);
 	pipex(&s_pipex, envp);
 	pipex_free(&s_pipex);
 // system("leaks pipex");
 	return (0);
 }
+

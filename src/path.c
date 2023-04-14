@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 15:49:03 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/13 17:03:06 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/13 23:56:18 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ char	**all_paths(char **envp)
 	char	**paths;
 
 	i = 0;
+	if (!envp || envp[0] == 0)
+		return (NULL);
 	while (envp[i] != 0 && ft_strncmp(envp[i], "PATH=", 5) != 0)
 		i++;
 	paths = ft_split((envp[i] + 5), ':');
@@ -34,11 +36,13 @@ char	*get_right_path(char *command, char **paths)
 	i = 0;
 	if (*command == '/')
 		return (command);
+	if (!paths)
+		return (NULL);
 	while (paths[i] != NULL)
 	{
 		test_path = ft_pathjoin(paths[i], command);
 		if (!test_path)
-			return (NULL);//
+			return (NULL);
 		if (access(test_path, F_OK) == 0)
 			return (test_path);
 		free(test_path);

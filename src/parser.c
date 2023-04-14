@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 19:42:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/13 21:12:41 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/14 00:13:32 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,25 @@
 // 	return (0);
 // }
 
-char	**pipex_parser(t_cmd *s_cmd, char *input)
+int	cmd_parser(t_cmd *s_cmd, char *input, char **paths)
 {
-	// get_command(s_cmd, input);
 	s_cmd->arguments = ft_split(input, ' ');
 	if (!s_cmd->arguments)
-		return (0);
-	return (s_cmd->arguments);
+		return (1);
+	s_cmd->path = get_right_path(s_cmd->arguments[0], paths);
+	if (!s_cmd->path)
+	{
+		ft_putstr_fd("pipex: ", 2);
+		ft_putstr_fd(s_cmd->arguments[0], 2);
+		ft_putendl_fd(": command not found", 2);
+		exit(127);
+	}
+	else if (access(s_cmd->path, X_OK) != 0)
+	{
+		ft_putstr_fd("pipex: ", 2);
+		ft_putstr_fd(s_cmd->arguments[0], 2);
+		ft_putendl_fd(": command not executable", 2);
+		exit(126);
+	}
+	return (0);
 }
