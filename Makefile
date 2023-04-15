@@ -6,7 +6,7 @@
 #    By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/06 17:07:45 by tmarts            #+#    #+#              #
-#    Updated: 2023/04/11 22:58:50 by tmarts           ###   ########.fr        #
+#    Updated: 2023/04/14 16:43:39 by tmarts           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,6 @@ LIBS	= $(LIBFT)/libft.a
 SRC_DIR	= ./src/
 SRCS	= $(addprefix $(SRC_DIR)/, \
 main.c \
-path.c \
 pipex_utils.c \
 parser.c \
 pipex.c)
