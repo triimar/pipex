@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:40:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/15 15:06:32 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/17 18:21:47 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,13 @@ char	*ft_free_split(char **p_p)
 
 void	pipex_free(t_pipex *s_pipex)
 {
-	ft_free_split(s_pipex->envp_paths);
-	ft_free_split(s_pipex->exec[0].arguments);
-	ft_free_split(s_pipex->exec[1].arguments);
+	ft_free_split(s_pipex->envp_pths);
+	ft_free_split(s_pipex->exec[0].args);
+	ft_free_split(s_pipex->exec[1].args);
 	return ;
 }
 
-static char	*relative_path(char const *command)
+char	*ft_relative_path(char const *command)
 {
 	char	*string;
 	int		cmd_len;
@@ -61,8 +61,6 @@ char	*ft_pathjoin(char const *s1, char const *s2)
 	int		s1_len;
 	int		s2_len;
 
-	if (!s1)
-		relative_path(s2);
 	s1_len = ft_strlen(s1);
 	s2_len = ft_strlen(s2);
 	string = malloc(s1_len + s2_len + 2);
