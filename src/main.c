@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 20:39:27 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/17 22:21:28 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/18 23:21:39 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,47 +29,40 @@ static void	open_files(t_pipex *s_pipex, char *infile, char *outfile)
 	}
 }
 
-static char	*ft_get_cmd(char *argv)
+static int	ft_get_cmd(t_cmd *s_cmd, char *argv)
 {
 	int		i;
-	char	*cmd;
 
 	i = 0;
 	while (*(argv + i) != 0 && *(argv + i) == ' ')
 		i++;
-	// while (ft_isalpha(*(argv + i)) == 1)
 	while (*(argv + i + 1) != 0 && *(argv + i + 1) != ' ')
 		i++;
-	cmd = malloc((i + 2) * sizeof(char));
-	if (!cmd)
-		return (NULL);
-	ft_strlcpy(cmd, argv, (i + 2));
-	return (cmd);
+	s_cmd->cmd = malloc((i + 2) * sizeof(char));
+	if (!s_cmd->cmd)
+		return (1);
+	ft_strlcpy(s_cmd->cmd, argv, (i + 2));
+	return (0);
 }
 
 static int	pipex_init(t_pipex *s_pipex, char **argv, char **envp)
 {
-	s_pipex->envp_pths = all_paths(envp);
-	s_pipex->exec[0].cmd = ft_get_cmd(argv[2]);
-	// ft_putstr_fd(s_pipex->exec[0].cmd, 2);
-	// ft_putendl_fd("$", 2);
-	s_pipex->exec[0].args = ft_split(argv[2], ' ');
-	if (!s_pipex->exec[0].args)
-	{
-		if (s_pipex->envp_pths)
-			free(s_pipex->envp_pths);
+	int	i;
+	int	arg_nr;
+
+	i = 0;
+	arg_nr = 1;
+	s_pipex->envp_pths = NULL;
+	if (all_paths(s_pipex, envp) != 0)
 		return (1);
-	}
-	s_pipex->exec[1].cmd = ft_get_cmd(argv[3]);
-	// ft_putstr_fd(s_pipex->exec[1].cmd, 2);
-	// ft_putendl_fd("$", 2);
-	s_pipex->exec[1].args = ft_split(argv[3], ' ');
-	if (!s_pipex->exec[1].args)
+	while (++arg_nr <= 3)
 	{
-		if (s_pipex->envp_pths)
-			free(s_pipex->envp_pths);
-		free(s_pipex->exec->args[0]);
-		return (1);
+		if (ft_get_cmd(&s_pipex->exec[i], argv[arg_nr]) != 0)
+			return (1);
+		s_pipex->exec[i].args = ft_split(argv[arg_nr], ' ');
+		if (!s_pipex->exec[i].args)
+			return (1);
+		i++;
 	}
 	return (0);
 }
@@ -83,18 +76,20 @@ int	main(int argc, char *argv[], char *envp[])
 		ft_putendl_fd("pipex: incorrect number of arguments", 2);
 		exit(EXIT_FAILURE);
 	}
-	// ft_putstr_fd(argv[2], 2);
-	// ft_putendl_fd("$", 2);
-	// ft_putstr_fd(argv[3], 2);
-	// ft_putendl_fd("$", 2);
 	open_files(&s_pipex, argv[1], argv[argc - 1]);
 	if (pipex_init(&s_pipex, argv, envp) < 0)
 	{
 		perror("pipex: failure initiating data");
+		pipex_free(&s_pipex);
+		close(s_pipex.infile);
+		close(s_pipex.outfile);
 		exit (EXIT_FAILURE);
 	}
-	pipex(&s_pipex, envp);
+	if (pipex(&s_pipex, envp) != 0)
+	{
+		pipex_free(&s_pipex);
+		exit (EXIT_FAILURE);
+	}
 	pipex_free(&s_pipex);
-// system("leaks pipex");
 	return (0);
 }

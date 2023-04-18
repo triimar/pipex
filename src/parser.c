@@ -6,65 +6,78 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 19:42:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/17 23:25:25 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/18 22:45:59 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	**all_paths(char **envp)
+int	all_paths(t_pipex *s_pipex, char **envp)
 {
 	int		i;
-	char	**paths;
 
 	i = 0;
-	if (!envp || envp[0] == 0)
-	{
-		return (NULL);
-	}
-	while (envp[i] != 0)
+	while (envp && envp[i] != 0)
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
-			paths = ft_split((envp[i] + 5), ':');
-			if (!paths)
-				perror("pipex: ft_split fail");
-			return (paths);
+			s_pipex->envp_pths = ft_split((envp[i] + 5), ':');
+			if (!s_pipex->envp_pths)
+				return (1);
+			return (0);
 		}
 		i++;
+	}
+	return (0);
+}
+
+static char	*no_env_path(char *command)
+{
+	char	*temp_path;
+
+	temp_path = ft_pathjoin("/bin", command);
+	if (!temp_path)
+		return (NULL);
+	if (access(temp_path, F_OK) == 0)
+		return (temp_path);
+	free(temp_path);
+	temp_path = ft_pathjoin("/usr/bin", command);
+	if (!temp_path)
+		return (NULL);
+	if (access(temp_path, F_OK) == 0)
+		return (temp_path);
+	free(temp_path);
+	return (NULL);
+}
+
+static char	*path_find_loop(char *command, char **paths)
+{
+	int		i;
+	char	*temp_path;
+
+	i = -1;
+	while (paths && paths[++i] != NULL)
+	{
+		temp_path = ft_pathjoin(paths[i], command);
+		if (!temp_path)
+			return (NULL);
+		if (access(temp_path, F_OK) == 0)
+			return (temp_path);
+		free(temp_path);
 	}
 	return (NULL);
 }
 
 char	*get_right_path(char *command, char **paths)
 {
-	int		i;
-	char	*test_path;
-
-	i = 0;
-	if (*command == '.' && *(command + 1) == '/')
-		paths = NULL;
-	if (*command == '/')
-		return (command);
 	if (!command)
 		return (NULL);
-	if (!paths || paths[0] == 0)
-	{
-		test_path = ft_relative_path(command);
-		if (!test_path)
-			return (NULL);
-		if (access(test_path, F_OK) == 0)
-			return (test_path);
-	}
-	while (paths && paths[i] != NULL)
-	{
-		test_path = ft_pathjoin(paths[i], command);
-		if (!test_path)
-			return (NULL);
-		if (access(test_path, F_OK) == 0)
-			return (test_path);
-		free(test_path);
-		i++;
-	}
+	if (access(command, F_OK) == 0 && (command[0] == '.'
+			|| command[0] == '/' || ft_strchr(command + 1, '/')))
+		return (command);
+	if (paths)
+		return (path_find_loop(command, paths));
+	if (!paths)
+		return (no_env_path(command));
 	return (NULL);
 }

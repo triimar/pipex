@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:49:45 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/17 20:16:18 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/18 23:19:38 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,20 @@ typedef struct s_pipex
 	t_cmd	exec[2];
 }	t_pipex;
 
+typedef struct s_wait
+{
+	int		wstatus;
+	int		wstatus2;
+	int		status_code;
+}	t_wait;
+
 int		pipex(t_pipex *s_pipex, char *envp[]);
-char	**all_paths(char **envp);
+int		all_paths(t_pipex *s_pipex, char **envp);
 char	*get_right_path(char *command, char **paths);
 char	*ft_free_split(char **p_p);
 void	pipex_free(t_pipex *s_pipex);
 char	*ft_pathjoin(char const *s1, char const *s2);
-char	*ft_relative_path(char const *command);
+void	infile_error(t_pipex *s_pipex);
+void	path_error(t_pipex *s_pipex, int exit_code, char *command);
 
 #endif
