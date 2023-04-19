@@ -6,11 +6,27 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 19:42:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/18 22:45:59 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/19 23:15:47 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+int	ft_get_cmd(t_cmd *s_cmd, char *argv)
+{
+	int		i;
+
+	i = 0;
+	while (*(argv + i) != 0 && *(argv + i) == ' ')
+		i++;
+	while (*(argv + i + 1) != 0 && *(argv + i + 1) != ' ')
+		i++;
+	s_cmd->cmd = malloc((i + 2) * sizeof(char));
+	if (!s_cmd->cmd)
+		return (1);
+	ft_strlcpy(s_cmd->cmd, argv, (i + 2));
+	return (0);
+}
 
 int	all_paths(t_pipex *s_pipex, char **envp)
 {

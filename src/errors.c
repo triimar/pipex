@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 23:17:35 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/18 23:20:33 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/19 23:39:12 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,11 @@ void	path_error(t_pipex *s_pipex, int exit_code, char *command)
 		ft_putendl_fd(": command not executable", STDERR_FILENO);
 	pipex_free(s_pipex);
 	exit(exit_code);
+}
+
+void	execve_error(t_pipex *s_pipex)
+{
+	ft_putendl_fd("pipex: execve error: ", STDERR_FILENO);
+	pipex_free(s_pipex);
+	exit(EXIT_FAILURE);
 }
