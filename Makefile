@@ -6,16 +6,17 @@
 #    By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/06 17:07:45 by tmarts            #+#    #+#              #
-#    Updated: 2023/04/19 23:44:34 by tmarts           ###   ########.fr        #
+#    Updated: 2023/04/20 20:32:36 by tmarts           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= pipex
+NAME_BONUS = pipex
 CC		= cc
 CFLAGS	= -Wall -Wextra -Werror
-# CFLAGS += -fsanitize=address -g3
+CFLAGS += -fsanitize=address -g3
 LDFLAGS = -lm
-# LDFLAGS += -fsanitize=address -g3
+LDFLAGS += -fsanitize=address -g3
 LIBFT	= ./libft
 HEADERS = -I $(LIBFT)
 LIBS	= $(LIBFT)/libft.a
@@ -29,12 +30,26 @@ pipex_initiate.c \
 pipex_free.c \
 pipex.c)
 
-OBJS	= ${SRCS:.c=.o}
+SRC_DIR_BONUS	= ./bonus/
+SRCS_BONUS	= $(addprefix $(SRC_DIR_BONUS)/, \
+main_bonus.c \
+pipex_utils_bonus.c \
+pipex_utils2_bonus.c \
+parser_bonus.c \
+errors_bonus.c \
+pipex_initiate_bonus.c \
+pipex_free_bonus.c \
+here_doc.c \
+pipex_bonus.c)
+
+OBJS = $(SRCS:.c=.o)
+OBJS_BONUS	= ${SRCS_BONUS:.c=.o}
 
 all: libft $(NAME)
 
 libft:
 	@$(MAKE) -C $(LIBFT)
+
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -o $@ -c $< $(HEADERS)
@@ -42,12 +57,17 @@ libft:
 $(NAME): $(OBJS)
 	@$(CC) $(OBJS) $(LIBS) $(HEADERS) -o $(NAME) ${LDFLAGS}
 
+bonus: libft $(OBJS_BONUS)
+	@$(CC) $(OBJS_BONUS) $(LIBS) $(HEADERS) -o $(NAME_BONUS) ${LDFLAGS}
+	
 clean:
 	@rm -f $(OBJS)
 	@$(MAKE) -C $(LIBFT) fclean
-
+	@rm -f $(OBJS_BONUS)
+	
 fclean:	clean
 	@rm -f $(NAME)
+	@rm -f $(NAME_BONUS)
 	
 re: fclean all
 
