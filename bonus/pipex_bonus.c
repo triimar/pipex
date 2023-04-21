@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:45:59 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/21 18:11:19 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/21 21:36:36 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,8 @@ int	pipex(t_pipex *s_pipex, char *envp[])
 		}
 		if (s_pipex->pids[i] == 0)
 			child_process(s_pipex, envp, (i + 1));
+		if (s_pipex->here_doc)
+			waitpid(-1, NULL, 0);
 		i++;
 	}
 	close_all(s_pipex);
