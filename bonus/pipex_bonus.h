@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:49:45 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/20 20:56:29 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/21 18:52:53 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,10 @@ typedef struct s_pipex
 	int		infile;
 	int		outfile;
 	int		forks;
-	int		pipes[2][2];
+	int		pipe1[2];
+	int		pipe2[2];
 	int		here_doc;
-	int		*pids; //have to be the amount of forks
+	int		*pids;
 	char	**envp_pths;
 	t_cmd	*s_cmd_lst;
 }	t_pipex;
@@ -55,16 +56,17 @@ int		pipex_init(t_pipex *s_pipex, char **argv, char **envp);
 int		all_paths(t_pipex *s_pipex, char **envp);
 int		ft_get_cmd(t_cmd *s_cmd, char *argv);
 char	*get_right_path(char *command, char **paths);
-/* here_doc.c */
-void	here_doc(t_pipex *s_pipex, int outfile);
+/* here_doc_bonus.c */
+void	here_doc(t_pipex *s_pipex);
 /* pipex_utils_bonus.c */
+int		make_pipes(int pipe1[2], int pipe2[2]);
 void	redirect(int in_fd, int out_fd);
 void	close_all(t_pipex *s_pipex);
 t_cmd	*get_node(t_cmd *list, int child_nr);
-char	*ft_pathjoin(char const *s1, char const *s2);
 void	ft_waiting(int *pids, int nr_of_forks);
 /* pipex_utils2_bonus.c */
-int		ft_str_identical(const char *s1, const char *s2, size_t len_s1);
+char	*ft_pathjoin(char const *s1, char const *s2);
+int		ft_str_same(const char *s1, const char *s2, size_t len_s1);
 /* errors_bonus.c */
 void	infile_error(t_pipex *s_pipex);
 void	path_error(t_pipex *s_pipex, int exit_code, char *command);

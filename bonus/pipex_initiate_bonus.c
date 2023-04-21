@@ -6,16 +6,15 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 23:25:57 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/20 20:34:08 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/21 18:21:15 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-
 void	open_files(t_pipex *s_pipex, char *infile, char *outfile)
 {
-	if (ft_str_identical(infile, "here_doc", ft_strlen(infile)) == 0)
+	if (ft_str_same(infile, "here_doc", ft_strlen(infile)) == 0)
 	{
 		s_pipex->here_doc = 1;
 		s_pipex->infile = STDIN_FILENO;

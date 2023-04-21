@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:49:45 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/19 23:40:26 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/21 18:09:55 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # include <stdlib.h> 
 # include <sys/wait.h>
 # include <unistd.h> 
-// # include <errno.h>
 # include "libft.h"
 
 typedef struct s_cmd
@@ -59,8 +58,9 @@ char	*get_right_path(char *command, char **paths);
 void	redirect(int in_fd, int out_fd);
 void	close_all(t_pipex *s_pipex);
 t_cmd	*get_node(t_cmd *list, int child_nr);
-char	*ft_pathjoin(char const *s1, char const *s2);
 void	ft_waiting(int *pids);
+/* pipex_utils.c */
+char	*ft_pathjoin(char const *s1, char const *s2);
 /* errors.c */
 void	infile_error(t_pipex *s_pipex);
 void	path_error(t_pipex *s_pipex, int exit_code, char *command);

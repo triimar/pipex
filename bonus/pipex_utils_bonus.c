@@ -6,11 +6,20 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:40:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/20 04:55:49 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/21 18:09:19 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
+
+int	make_pipes(int pipe1[2], int pipe2[2])
+{
+	if (pipe(pipe1) == -1)
+		return (2);
+	if (pipe(pipe2) == -1)
+		return (2);
+	return (0);
+}
 
 void	redirect(int in_fd, int out_fd)
 {
@@ -24,10 +33,10 @@ void	close_all(t_pipex *s_pipex)
 {
 	close(s_pipex->infile);
 	close(s_pipex->outfile);
-	close(s_pipex->pipes[0][0]);
-	close(s_pipex->pipes[0][1]);
-	close(s_pipex->pipes[1][0]);
-	close(s_pipex->pipes[1][1]);
+	close(s_pipex->pipe1[0]);
+	close(s_pipex->pipe1[1]);
+	close(s_pipex->pipe2[0]);
+	close(s_pipex->pipe2[1]);
 }
 
 t_cmd	*get_node(t_cmd *list, int child_nr)
@@ -45,27 +54,6 @@ t_cmd	*get_node(t_cmd *list, int child_nr)
 		i++;
 	}	
 	return (current);
-}
-
-char	*ft_pathjoin(char const *s1, char const *s2)
-{
-	char	*string;
-	int		s1_len;
-	int		s2_len;
-
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	string = malloc(s1_len + s2_len + 2);
-	if (!string)
-		return (NULL);
-	while (s1 && *s1 != 0)
-		*string++ = *s1++;
-	*string = '/';
-	string++;
-	while (*s2 != 0)
-		*string++ = *s2++;
-	*string = '\0';
-	return (string - s1_len - s2_len - 1);
 }
 
 void	ft_waiting(int *pids, int nr_of_forks)

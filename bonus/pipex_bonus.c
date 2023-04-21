@@ -6,82 +6,86 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:45:59 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/20 20:55:55 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/21 18:11:19 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
+static void	child_middle(t_pipex *s_pipex, int child_nr)
+{
+	close(s_pipex->infile);
+	close(s_pipex->outfile);
+	if (child_nr % 2 == 0)
+	{
+		close(s_pipex->pipe1[1]);
+		close(s_pipex->pipe2[0]);
+		redirect(s_pipex->pipe1[0], s_pipex->pipe2[1]);
+	}
+	else
+	{
+		close(s_pipex->pipe1[0]);
+		close(s_pipex->pipe2[1]);
+		redirect(s_pipex->pipe2[0], s_pipex->pipe1[1]);
+	}
+}
 
-void	child_process(t_pipex *s_pipex, char *envp[], int child_nr)
+static void	child_first(t_pipex *s_pipex)
+{
+	if (s_pipex->forks == 1)
+	{
+		close(s_pipex->pipe1[0]);
+		close(s_pipex->pipe1[1]);
+		close(s_pipex->pipe2[0]);
+		close(s_pipex->pipe2[1]);
+		redirect(s_pipex->infile, s_pipex->outfile);
+	}
+	else
+	{
+		close(s_pipex->outfile);
+		close(s_pipex->pipe1[0]);
+		close(s_pipex->pipe2[0]);
+		close(s_pipex->pipe2[1]);
+		if (s_pipex->infile < 0)
+			infile_error(s_pipex);
+		if (s_pipex->here_doc == 1)
+			here_doc(s_pipex);
+		redirect(s_pipex->infile, s_pipex->pipe1[1]);
+	}
+}
+
+static void	child_last(t_pipex *s_pipex, int child_nr)
+{
+	close(s_pipex->infile);
+	if (child_nr % 2 == 0)
+	{
+		close(s_pipex->pipe1[1]);
+		close(s_pipex->pipe2[0]);
+		close(s_pipex->pipe2[1]);
+		redirect(s_pipex->pipe1[0], s_pipex->outfile);
+	}
+	else
+	{
+		close(s_pipex->pipe2[1]);
+		close(s_pipex->pipe1[0]);
+		close(s_pipex->pipe1[1]);
+		redirect(s_pipex->pipe2[0], s_pipex->outfile);
+	}
+}
+
+static void	child_process(t_pipex *s_pipex, char *envp[], int child_nr)
 {
 	char	*path;
 	t_cmd	*right_cmd_node;
 
-	if (s_pipex->forks == 1)
-	{
-		close(s_pipex->pipes[0][0]);
-		close(s_pipex->pipes[0][1]);
-		close(s_pipex->pipes[1][0]);
-		close(s_pipex->pipes[1][1]);
-		redirect(s_pipex->infile, s_pipex->outfile);
-	}
-	else if (child_nr == 1)
-	{
-		close(s_pipex->outfile);
-		close(s_pipex->pipes[0][0]);
-		close(s_pipex->pipes[1][0]);
-		close(s_pipex->pipes[1][1]);
-		if (s_pipex->infile < 0)
-			infile_error(s_pipex);
-		if (s_pipex->here_doc == 1)
-			here_doc(s_pipex, s_pipex->pipes[0][1]);
-		redirect(s_pipex->infile, s_pipex->pipes[0][1]);
-	}
+	if (child_nr == 1)
+		child_first(s_pipex);
 	else if (child_nr == s_pipex->forks)
-	{
-		close(s_pipex->infile);
-		if (child_nr % 2 == 0)
-		{
-			close(s_pipex->pipes[0][1]);
-			close(s_pipex->pipes[1][0]);
-			close(s_pipex->pipes[1][1]);
-			// ft_putendl_fd("final_paaris", STDOUT_FILENO);
-			// ft_putnbr_fd(s_pipex->outfile, STDOUT_FILENO);
-			redirect(s_pipex->pipes[0][0], s_pipex->outfile);
-		}
-		else
-		{
-			close(s_pipex->pipes[1][1]);
-			close(s_pipex->pipes[0][0]);
-			close(s_pipex->pipes[0][1]);
-			// ft_putendl_fd("final_paaritu", STDOUT_FILENO);
-			redirect(s_pipex->pipes[1][0], s_pipex->outfile);
-		}
-	}
+		child_last(s_pipex, child_nr);
 	else
-	{
-		close(s_pipex->infile);
-		close(s_pipex->outfile);
-		if (child_nr % 2 == 0)
-		{
-			close(s_pipex->pipes[0][1]);
-			close(s_pipex->pipes[1][0]);
-			// ft_putendl_fd("second", STDOUT_FILENO);
-			redirect(s_pipex->pipes[0][0], s_pipex->pipes[1][1]);
-		}
-		else
-		{
-			close(s_pipex->pipes[0][0]);
-			close(s_pipex->pipes[1][1]);
-			// ft_putendl_fd("third", STDOUT_FILENO);
-			redirect(s_pipex->pipes[1][0], s_pipex->pipes[0][1]);
-		}
-	}
+		child_middle(s_pipex, child_nr);
 	right_cmd_node = get_node(s_pipex->s_cmd_lst, child_nr);
-	// ft_putendl_fd(right_cmd_node->cmd, STDERR_FILENO);
 	path = get_right_path(right_cmd_node->cmd, s_pipex->envp_pths);
-	// ft_putendl_fd(path, STDERR_FILENO);
 	if (!path)
 		path_error(s_pipex, 127, right_cmd_node->cmd);
 	else if (access(path, X_OK) != 0)
@@ -94,14 +98,9 @@ int	pipex(t_pipex *s_pipex, char *envp[])
 {
 	int		i;
 
-	if (pipe(s_pipex->pipes[0]) == -1)
+	if (make_pipes(s_pipex->pipe1, s_pipex->pipe2) != 0)
 	{
-		perror("Pipe error");
-		return (2);
-	}
-	if (pipe(s_pipex->pipes[1]) == -1)
-	{
-		perror("Pipe error");
+		perror("pipex: pipe error");
 		return (2);
 	}
 	i = 0;
