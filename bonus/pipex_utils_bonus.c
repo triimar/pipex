@@ -6,20 +6,20 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:40:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/21 18:09:19 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/22 18:59:44 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-int	make_pipes(int pipe1[2], int pipe2[2])
-{
-	if (pipe(pipe1) == -1)
-		return (2);
-	if (pipe(pipe2) == -1)
-		return (2);
-	return (0);
-}
+// int	make_pipes(int pipe1[2], int pipe2[2])
+// {
+// 	if (pipe(pipe1) == -1)
+// 		return (2);
+// 	if (pipe(pipe2) == -1)
+// 		return (2);
+// 	return (0);
+// }
 
 void	redirect(int in_fd, int out_fd)
 {

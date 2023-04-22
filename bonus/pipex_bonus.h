@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:49:45 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/21 18:52:53 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/22 19:00:18 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ char	*get_right_path(char *command, char **paths);
 /* here_doc_bonus.c */
 void	here_doc(t_pipex *s_pipex);
 /* pipex_utils_bonus.c */
-int		make_pipes(int pipe1[2], int pipe2[2]);
+// int		make_pipes(int pipe1[2], int pipe2[2]);
 void	redirect(int in_fd, int out_fd);
 void	close_all(t_pipex *s_pipex);
 t_cmd	*get_node(t_cmd *list, int child_nr);
