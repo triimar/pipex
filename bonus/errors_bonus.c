@@ -6,18 +6,11 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 23:17:35 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/20 20:21:45 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/23 15:27:28 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
-
-void	infile_error(t_pipex *s_pipex)
-{
-	close_all(s_pipex);
-	pipex_free(s_pipex);
-	exit(EXIT_FAILURE);
-}
 
 void	path_error(t_pipex *s_pipex, int exit_code, char *command)
 {
@@ -36,4 +29,13 @@ void	execve_error(t_pipex *s_pipex)
 	ft_putendl_fd("pipex: execve error: ", STDERR_FILENO);
 	pipex_free(s_pipex);
 	exit(EXIT_FAILURE);
+}
+
+int	fork_pipe_error(int return_val)
+{
+	if (return_val == 2)
+		perror("pipex: pipe error");
+	if (return_val == 3)
+		perror("pipex: fork error");
+	return (return_val);
 }

@@ -6,7 +6,7 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:45:59 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/22 22:02:00 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/23 15:24:29 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,10 @@ static void	child_first(t_pipex *s_pipex)
 		close(s_pipex->outfile);
 		close(s_pipex->pipe1[0]);
 		if (s_pipex->infile < 0)
-			infile_error(s_pipex);
+		{
+			pipex_free(s_pipex);
+			exit(EXIT_FAILURE);
+		}
 		if (s_pipex->here_doc == 1)
 			here_doc(s_pipex);
 		redirect(s_pipex->infile, s_pipex->pipe1[1]);
@@ -91,38 +94,17 @@ int	pipex(t_pipex *s_pipex, char *envp[])
 	{
 		if (s_pipex->forks != 1 && i < s_pipex->forks - 1)
 		{
-			if (i % 2 == 0)
-			{
-				if (pipe(s_pipex->pipe1) == -1)
-					return (2);
-			}
-			else
-			{
-				if (pipe(s_pipex->pipe2) == -1)
-					return (2);
-			}	
+			if (make_pipes(s_pipex->pipe1, s_pipex->pipe2, (i + 1)) != 0)
+				return (fork_pipe_error(2));
 		}
 		s_pipex->pids[i] = fork();
 		if (s_pipex->pids[i] == -1)
-		{
-			perror("Fork error");
-			return (3);
-		}
+			return (fork_pipe_error(3));
 		if (s_pipex->pids[i] == 0)
 			child_process(s_pipex, envp, (i + 1));
-		if (s_pipex->pids[i] != 0 && s_pipex->forks != 1 && i != 0)
-		{
-			if (i % 2 == 0)
-			{
-				close(s_pipex->pipe2[0]);
-				close(s_pipex->pipe2[1]);
-			}
-			else
-			{
-				close(s_pipex->pipe1[0]);
-				close(s_pipex->pipe1[1]);
-			}
-		}
+		if (s_pipex->here_doc)
+			waitpid(s_pipex->pids[0], NULL, 0);
+		used_pipes(s_pipex, i + 1);
 		i++;
 	}
 	close(s_pipex->infile);

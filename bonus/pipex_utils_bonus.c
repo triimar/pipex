@@ -6,20 +6,26 @@
 /*   By: tmarts <tmarts@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 18:40:52 by tmarts            #+#    #+#             */
-/*   Updated: 2023/04/22 18:59:44 by tmarts           ###   ########.fr       */
+/*   Updated: 2023/04/23 15:10:30 by tmarts           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-// int	make_pipes(int pipe1[2], int pipe2[2])
-// {
-// 	if (pipe(pipe1) == -1)
-// 		return (2);
-// 	if (pipe(pipe2) == -1)
-// 		return (2);
-// 	return (0);
-// }
+int	make_pipes(int pipe1[2], int pipe2[2], int child_nr)
+{
+	if (child_nr % 2 == 0)
+	{
+		if (pipe(pipe2) == -1)
+			return (2);
+	}
+	else
+	{
+		if (pipe(pipe1) == -1)
+			return (2);
+	}	
+	return (0);
+}
 
 void	redirect(int in_fd, int out_fd)
 {
@@ -37,6 +43,23 @@ void	close_all(t_pipex *s_pipex)
 	close(s_pipex->pipe1[1]);
 	close(s_pipex->pipe2[0]);
 	close(s_pipex->pipe2[1]);
+}
+
+void	used_pipes(t_pipex *s_pipex, int child_nr)
+{
+	if (s_pipex->forks != 1 && child_nr != 1 && child_nr <= s_pipex->forks)
+	{
+		if (child_nr % 2 == 0)
+		{
+			close(s_pipex->pipe1[0]);
+			close(s_pipex->pipe1[1]);
+		}
+		else
+		{
+			close(s_pipex->pipe2[0]);
+			close(s_pipex->pipe2[1]);
+		}
+	}
 }
 
 t_cmd	*get_node(t_cmd *list, int child_nr)
@@ -64,7 +87,10 @@ void	ft_waiting(int *pids, int nr_of_forks)
 	pid_index = 0;
 	while (pid_index < nr_of_forks)
 	{
-		waitpid(pids[pid_index], &s_wait.wstatus, 0);
+		if (pid_index == nr_of_forks - 1)
+			waitpid(pids[pid_index], &s_wait.wstatus, 0);
+		else
+			waitpid(pids[pid_index], NULL, 0);
 		pid_index++;
 	}
 	if (WIFEXITED(s_wait.wstatus))
